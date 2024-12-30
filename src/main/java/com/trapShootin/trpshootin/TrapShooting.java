@@ -228,10 +228,15 @@ public class TrapShooting implements ActionListener, MouseListener, MouseMotionL
 		if (!gameState.canShoot) {
 			int reloadSpeed = gameState.difficulty == DifficultyLevel.HARD ? 20 :
 					gameState.difficulty == DifficultyLevel.NORMAL ? 15 : 10;
+
 			if (gameState.ticks % reloadSpeed == 0) {
-				gameState.bullet++;
-				if (gameState.bullet >= 6) {
-					gameState.canShoot = true;
+				if (gameState.bullet < 6 && (gameState.autoReloading || !gameState.canShoot)) {
+					gameState.bullet++;
+					if (gameState.bullet >= 6) {
+						gameState.bullet = 6;
+						gameState.canShoot = true;
+						gameState.autoReloading = false;
+					}
 				}
 			}
 		}
@@ -300,24 +305,32 @@ public class TrapShooting implements ActionListener, MouseListener, MouseMotionL
 		gameState.clickX = e.getX() - 8;
 		gameState.clickY = e.getY() - 37;
 
-		switch (gameState.gameMod) {
-			case MENU_MODE:
-				handleMenuClick();
-				break;
-			case MODE_SELECT:
-				handleModeSelect();
-				break;
-			case DIFFICULTY_SELECT:
-				handleDifficultySelect();
-				break;
-			case GAME_PLAYING:
-				handleShooting();
-				updateHitRate();
-				updateBestScore();
-				break;
-			case GAME_OVER:
-				handleGameOverClick();
-				break;
+		if (e.getButton() == MouseEvent.BUTTON3) {
+			// 只要在遊戲中且子彈數量小於6就可以補充
+			if (gameState.gameMod == GAME_PLAYING && gameState.bullet < 6) {
+				gameState.autoReloading = true;
+				gameState.canShoot = false;  // 開始補充狀態
+			}
+		} else {
+			switch (gameState.gameMod) {
+				case MENU_MODE:
+					handleMenuClick();
+					break;
+				case MODE_SELECT:
+					handleModeSelect();
+					break;
+				case DIFFICULTY_SELECT:
+					handleDifficultySelect();
+					break;
+				case GAME_PLAYING:
+					handleShooting();
+					updateHitRate();
+					updateBestScore();
+					break;
+				case GAME_OVER:
+					handleGameOverClick();
+					break;
+			}
 		}
 	}
 
@@ -392,6 +405,9 @@ public class TrapShooting implements ActionListener, MouseListener, MouseMotionL
 				gameState.score += baseScore * gameState.scoreMultiplier;
 				gameState.hitCount++;
 				gameState.combo++;
+				if (gameState.combo > gameState.gameMaxCombo) {  // 只記錄單次遊戲的最高連擊
+					gameState.gameMaxCombo = gameState.combo;
+				}
 				hit = true;
 			}
 			if (gameState.T2.isHit(gameState.clickX, gameState.clickY)) {
@@ -399,6 +415,9 @@ public class TrapShooting implements ActionListener, MouseListener, MouseMotionL
 				gameState.score += baseScore * gameState.scoreMultiplier;
 				gameState.hitCount++;
 				gameState.combo++;
+				if (gameState.combo > gameState.gameMaxCombo) {  // 只記錄單次遊戲的最高連擊
+					gameState.gameMaxCombo = gameState.combo;
+				}
 				hit = true;
 			}
 

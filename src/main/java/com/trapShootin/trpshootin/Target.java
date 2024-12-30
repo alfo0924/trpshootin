@@ -7,13 +7,13 @@ import java.awt.Graphics2D;
 
 public class Target {
 	// 基本屬性
-	private int x;
-	private int y;
+	private double x;
+	private double y;
 	private int cx;
 	private int cy;
 	private int d;
-	private int speed;
-	private int a;
+	private double speed;
+	private double a;
 	private boolean right;
 	private int count;
 	private boolean isLife;
@@ -70,7 +70,7 @@ public class Target {
 			this.x = 800;
 		}
 		this.isLife = true;
-		this.right = (this.x < 300);
+		this.right = (this.x == 0);
 	}
 
 	private void setupActiveTarget() {
@@ -80,39 +80,33 @@ public class Target {
 		// 根據難度調整速度和大小
 		switch (difficulty) {
 			case EASY:
-				this.speed = (int)(Math.random() * 5 + 15);
+				this.speed = (Math.random() * 5 + 15);
 				this.d = (int)(Math.random() * 10 + 50);
 				break;
 			case NORMAL:
-				this.speed = (int)(Math.random() * 10 + 20);
+				this.speed = (Math.random() * 10 + 20);
 				this.d = (int)(Math.random() * 20 + 40);
 				break;
 			case HARD:
-				this.speed = (int)(Math.random() * 15 + 25);
+				this.speed = (Math.random() * 15 + 25);
 				this.d = (int)(Math.random() * 15 + 35);
 				break;
 		}
 
 		this.x = (randomX > 5) ? 0 : 700;
 		this.y = randomY;
-		this.a = (int)(Math.random() * 7 + 10);
-
-		// 基礎分數計算
+		this.a = (Math.random() * 7 + 10);
 		this.score = calculateBaseScore();
 	}
 
 	private int calculateBaseScore() {
 		int baseScore = 1;
 
-		// 速度加分
 		if (speed > 25) baseScore++;
 		if (speed > 30) baseScore++;
-
-		// 大小加分
 		if (d < 50) baseScore++;
 		if (d < 40) baseScore++;
 
-		// 難度加分
 		switch (difficulty) {
 			case EASY:
 				break;
@@ -124,9 +118,7 @@ public class Target {
 				break;
 		}
 
-		// 回合加分
 		baseScore += (currentRound - 1) * 0.5;
-
 		return baseScore;
 	}
 
@@ -140,6 +132,7 @@ public class Target {
 		this.oscillationAmplitude = 30;
 		this.oscillationAngle = 0;
 	}
+
 	public void move() {
 		count++;
 		if (isZombie) {
@@ -147,28 +140,22 @@ public class Target {
 		} else {
 			moveNormalTarget();
 		}
-
-		// 根據難度調整額外移動
 		applyDifficultyMovement();
 	}
 
 	private void moveNormalTarget() {
-		if (count % 2 == 0) {
-			// 基本水平移動
-			if (right) {
-				this.x += this.speed;
-			} else {
-				this.x -= this.speed;
-			}
+		if (right) {
+			this.x += this.speed/2;
+		} else {
+			this.x -= this.speed/2;
+		}
 
-			// 垂直移動
-			if (a > 0 && count % 2 == 0) {
-				this.y -= 2 * a;
-				a--;
-			} else {
-				this.y += (-1 * a);
-				a--;
-			}
+		if (a > 0) {
+			this.y -= a;
+			a = a - 0.5;
+		} else {
+			this.y += (-0.5 * a);
+			a = a - 0.5;
 		}
 	}
 
@@ -176,7 +163,7 @@ public class Target {
 		double speedMultiplier = getSpeedMultiplier();
 
 		switch (zombieMovementPattern) {
-			case 0: // 鋸齒形移動
+			case 0:
 				if (right) {
 					this.x += this.speed * 0.7 * speedMultiplier;
 				} else {
@@ -185,7 +172,7 @@ public class Target {
 				this.y += Math.sin(count * 0.1) * 5 * speedMultiplier;
 				break;
 
-			case 1: // 跳躍式移動
+			case 1:
 				if (count % 20 == 0) {
 					this.y -= 40 * speedMultiplier;
 				} else if (count % 20 == 10) {
@@ -198,7 +185,7 @@ public class Target {
 				}
 				break;
 
-			case 2: // 螺旋式移動
+			case 2:
 				oscillationAngle += 0.1 * speedMultiplier;
 				if (right) {
 					this.x += this.speed * 0.6 * speedMultiplier;
@@ -212,36 +199,30 @@ public class Target {
 
 	private double getSpeedMultiplier() {
 		switch (difficulty) {
-			case EASY:
-				return 0.8;
-			case NORMAL:
-				return 1.0;
-			case HARD:
-				return 1.3;
-			default:
-				return 1.0;
+			case EASY: return 0.8;
+			case NORMAL: return 1.0;
+			case HARD: return 1.3;
+			default: return 1.0;
 		}
 	}
 
 	private void applyDifficultyMovement() {
 		switch (difficulty) {
 			case HARD:
-				// 困難模式下的額外隨機移動
 				if (count % 30 == 0) {
 					this.y += (Math.random() - 0.5) * 20;
 				}
 				break;
 			case NORMAL:
-				// 普通模式下的輕微擾動
 				if (count % 45 == 0) {
 					this.y += (Math.random() - 0.5) * 10;
 				}
 				break;
 			case EASY:
-				// 容易模式下保持穩定移動
 				break;
 		}
 	}
+
 	public void drawTarget(Graphics g) {
 		Graphics2D g2 = (Graphics2D)g;
 		g2.setStroke(new BasicStroke(3));
@@ -252,7 +233,6 @@ public class Target {
 			} else {
 				drawNormalTarget(g2);
 			}
-			// 如果是困難模式，添加特殊視覺效果
 			if (difficulty == DifficultyLevel.HARD) {
 				drawDifficultyEffects(g2);
 			}
@@ -262,11 +242,9 @@ public class Target {
 	}
 
 	private void drawZombieTarget(Graphics2D g2) {
-		// 殭屍靶的基本外觀
 		g2.setColor(zombieColor);
-		g2.fillOval(this.x, this.y, this.d, this.d);
+		g2.fillOval((int)this.x, (int)this.y, this.d, this.d);
 
-		// 根據難度調整殭屍靶外觀
 		switch (difficulty) {
 			case HARD:
 				drawHardZombieFeatures(g2);
@@ -278,8 +256,6 @@ public class Target {
 				drawEasyZombieFeatures(g2);
 				break;
 		}
-
-		// 生命值指示器
 		drawHealthBar(g2);
 	}
 
@@ -288,54 +264,49 @@ public class Target {
 		int barHeight = 5;
 		int spacing = 2;
 		int totalWidth = (barWidth + spacing) * health;
-		int startX = this.x + (this.d - totalWidth) / 2;
+		double startX = this.x + (this.d - totalWidth) / 2;
 
 		g2.setColor(Color.RED);
 		for (int i = 0; i < health; i++) {
-			g2.fillRect(startX + (i * (barWidth + spacing)), this.y - 10, barWidth, barHeight);
+			g2.fillRect((int)(startX + (i * (barWidth + spacing))), (int)this.y - 10, barWidth, barHeight);
 		}
 	}
 
 	private void drawHardZombieFeatures(Graphics2D g2) {
-		// 紅色發光眼睛
 		g2.setColor(Color.RED);
-		g2.fillOval(this.x + d/4, this.y + d/3, d/5, d/5);
-		g2.fillOval(this.x + d*2/3, this.y + d/3, d/5, d/5);
+		g2.fillOval((int)(this.x + d/4), (int)(this.y + d/3), d/5, d/5);
+		g2.fillOval((int)(this.x + d*2/3), (int)(this.y + d/3), d/5, d/5);
 
-		// 添加牙齒
 		g2.setColor(Color.WHITE);
 		int teethWidth = d/8;
 		g2.fillPolygon(
-				new int[]{this.x + d/3, this.x + d/3 + teethWidth, this.x + d/3 + teethWidth/2},
-				new int[]{this.y + d*2/3, this.y + d*2/3, this.y + d*2/3 + teethWidth},
+				new int[]{(int)(this.x + d/3), (int)(this.x + d/3 + teethWidth), (int)(this.x + d/3 + teethWidth/2)},
+				new int[]{(int)(this.y + d*2/3), (int)(this.y + d*2/3), (int)(this.y + d*2/3 + teethWidth)},
 				3
 		);
 	}
 
 	private void drawNormalZombieFeatures(Graphics2D g2) {
-		// 普通的眼睛
 		g2.setColor(Color.RED);
-		g2.fillOval(this.x + d/4, this.y + d/3, d/6, d/6);
-		g2.fillOval(this.x + d*2/3, this.y + d/3, d/6, d/6);
+		g2.fillOval((int)(this.x + d/4), (int)(this.y + d/3), d/6, d/6);
+		g2.fillOval((int)(this.x + d*2/3), (int)(this.y + d/3), d/6, d/6);
 	}
 
 	private void drawEasyZombieFeatures(Graphics2D g2) {
-		// 簡單的眼睛
 		g2.setColor(Color.RED);
-		g2.fillOval(this.x + d/4, this.y + d/3, d/7, d/7);
-		g2.fillOval(this.x + d*2/3, this.y + d/3, d/7, d/7);
+		g2.fillOval((int)(this.x + d/4), (int)(this.y + d/3), d/7, d/7);
+		g2.fillOval((int)(this.x + d*2/3), (int)(this.y + d/3), d/7, d/7);
 	}
 
 	private void drawNormalTarget(Graphics2D g2) {
 		g2.setColor(getColorByScore());
-		g2.fillOval(this.x, this.y, this.d, this.d);
+		g2.fillOval((int)this.x, (int)this.y, this.d, this.d);
 	}
 
 	private void drawDestroyedTarget(Graphics2D g2) {
 		Color targetColor = isZombie ? zombieColor : getColorByScore();
 		g2.setColor(targetColor);
 
-		// 爆炸效果
 		int particles = difficulty == DifficultyLevel.HARD ? 15 :
 				difficulty == DifficultyLevel.NORMAL ? 10 : 5;
 
@@ -343,14 +314,13 @@ public class Target {
 			int r1 = (int)(Math.random() * this.d + 1);
 			int r2 = (int)(Math.random() * this.d + 1);
 			int particleSize = (int)(Math.random() * 10 + 5);
-			g2.fillOval(this.x + r1, this.y + r2, particleSize, particleSize);
+			g2.fillOval((int)this.x + r1, (int)this.y + r2, particleSize, particleSize);
 		}
 	}
 
 	private void drawDifficultyEffects(Graphics2D g2) {
-		// 困難模式特殊視覺效果
 		g2.setColor(new Color(255, 0, 0, 50));
-		g2.drawOval(this.x - 5, this.y - 5, this.d + 10, this.d + 10);
+		g2.drawOval((int)this.x - 5, (int)this.y - 5, this.d + 10, this.d + 10);
 	}
 
 	private Color getColorByScore() {
@@ -365,8 +335,8 @@ public class Target {
 
 	public boolean isHit(int x, int y) {
 		int r = this.d / 2;
-		this.cx = this.x + d/2;
-		this.cy = this.y + d/2;
+		this.cx = (int)(this.x + d/2);
+		this.cy = (int)(this.y + d/2);
 
 		if (r > Math.sqrt(Math.pow((x-cx), 2) + Math.pow((y-cy), 2))) {
 			if (isZombie) {
@@ -380,17 +350,13 @@ public class Target {
 		return false;
 	}
 
-	// Getters
-	public int getX() { return this.x; }
-	public int getY() { return this.y; }
+	public int getX() { return (int)this.x; }
+	public int getY() { return (int)this.y; }
+	public double getSpeed() { return this.speed; }
 	public int getD() { return this.d; }
 	public int getScore() { return this.score; }
 	public boolean getLife() { return this.isLife; }
 	public boolean isZombie() { return this.isZombie; }
 	public int getHealth() { return this.health; }
 	public DifficultyLevel getDifficulty() { return this.difficulty; }
-
-    public double getSpeed() {
-        return 0;
-    }
 }

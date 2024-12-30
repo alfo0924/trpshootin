@@ -133,7 +133,7 @@ public class GameRenderer {
         drawShadowText(g2d, "Final Score: " + (int)gameState.score, BASE_WIDTH/2, statsY, Color.WHITE);
         drawShadowText(g2d, "Best Score: " + gameState.best, BASE_WIDTH/2, statsY + 50, Color.WHITE);
         drawShadowText(g2d, String.format("Hit Rate: %.2f%%", gameState.hitRate), BASE_WIDTH/2, statsY + 100, Color.WHITE);
-        drawShadowText(g2d, "Max Combo: " + gameState.maxCombo, BASE_WIDTH/2, statsY + 150, Color.ORANGE);
+        drawShadowText(g2d, "Max Combo: " + gameState.gameMaxCombo, BASE_WIDTH/2, statsY + 150, Color.ORANGE);
 
         g2d.setFont(new Font("Arial", Font.BOLD, 30));
         if ((gameState.ticks / 30) % 2 == 0) {

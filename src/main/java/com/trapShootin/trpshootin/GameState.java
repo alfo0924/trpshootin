@@ -32,6 +32,7 @@ public class GameState {
     public int shootCount;
     public int combo;
     public int maxCombo;
+    public int gameMaxCombo;
 
     // 滑鼠位置
     public int mouseX;
@@ -56,6 +57,9 @@ public class GameState {
     public Rectangle[] difficultyButtons;
     public boolean showRestartPrompt;
 
+    //右鍵彈藥補充
+    public boolean autoReloading = false;
+
     public GameState() {
         initializeGameState();
         initializeButtons();
@@ -79,7 +83,7 @@ public class GameState {
         hitCount = 0;
         shootCount = 0;
         combo = 0;
-        maxCombo = 0;
+        gameMaxCombo = 0;
 
         mouseX = TrapShooting.WIDTH / 2;
         mouseY = TrapShooting.HEIGHT / 3;
@@ -167,6 +171,7 @@ public class GameState {
         bullet = 6;
         hitRate = 0;
         combo = 0;
+        gameMaxCombo = 0;  // 新遊戲開始時重置
         canShoot = true;
         currentRound = 1;
         isRoundEnding = false;
