@@ -124,6 +124,10 @@ public class GameState {
         double difficultyBonus = difficulty != null ? difficulty.getScoreMultiplier() : 1.0;
         double modeBonus = isEndlessMode ? 1.2 : 1.0;
         scoreMultiplier = roundBonus * difficultyBonus * modeBonus;
+
+        // 使用 DecimalFormat 來格式化結果，確保精度
+        DecimalFormat df = new DecimalFormat("0.00");
+        scoreMultiplier = Double.parseDouble(df.format(scoreMultiplier));
     }
 
     public void incrementCombo() {

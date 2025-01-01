@@ -16,7 +16,7 @@ public class GameRenderer {
     public static final int FIRST_BUTTON_Y = 300;
     private static final int TITLE_Y = 150;
     private static final int SUBTITLE_Y = 220;
-    private static final int SCORE_X = 30;
+    private static final int SCORE_X = 80;
     private static final int SCORE_Y = 40;
     private static final int TIMER_Y = 80;
 
