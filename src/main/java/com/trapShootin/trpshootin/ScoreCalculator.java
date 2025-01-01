@@ -34,9 +34,9 @@ public class ScoreCalculator {
         // 回合加成
         currentMultiplier += (currentRound - 1) * ROUND_BONUS_MULTIPLIER;
 
-        // Combo加成
-        if (combo >= COMBO_THRESHOLD) {
-            currentMultiplier += (combo - COMBO_THRESHOLD + 1) * COMBO_MULTIPLIER;
+        // Combo加成應基於 maxCombo
+        if (maxCombo >= COMBO_THRESHOLD) {
+            currentMultiplier += (maxCombo - COMBO_THRESHOLD + 1) * COMBO_MULTIPLIER;
         }
 
         // 命中率加成

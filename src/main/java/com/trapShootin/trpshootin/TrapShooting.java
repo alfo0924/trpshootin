@@ -43,6 +43,9 @@ public class TrapShooting implements ActionListener, MouseListener, MouseMotionL
 		setupWindow();
 		setupTimer();
 	}
+	public void setGameState(GameState state) {
+		this.gameState = state;
+	}
 
 	private void initializeGame() {
 		renderer = new GameRenderer();
