@@ -33,6 +33,7 @@ public class Target {
 		this.difficulty = difficulty;
 		this.currentRound = currentRound;
 		initializeTarget(start);
+		//取消殭屍靶
 		if (start && shouldBeZombie()) {
 			initializeZombieTarget();
 		}
@@ -85,11 +86,11 @@ public class Target {
 				break;
 			case NORMAL:
 				this.speed = (Math.random() * 10 + 20);
-				this.d = (int)(Math.random() * 20 + 40);
+				this.d = (int)(Math.random() * 10 + 50);
 				break;
 			case HARD:
 				this.speed = (Math.random() * 15 + 25);
-				this.d = (int)(Math.random() * 15 + 35);
+				this.d = (int)(Math.random() * 10 + 50);
 				break;
 		}
 
@@ -165,9 +166,9 @@ public class Target {
 		switch (zombieMovementPattern) {
 			case 0:
 				if (right) {
-					this.x += this.speed * 0.7 * speedMultiplier;
+					this.x += this.speed/2 * 0.7 * speedMultiplier;
 				} else {
-					this.x -= this.speed * 0.7 * speedMultiplier;
+					this.x -= this.speed/2 * 0.7 * speedMultiplier;
 				}
 				this.y += Math.sin(count * 0.1) * 5 * speedMultiplier;
 				break;
@@ -341,7 +342,10 @@ public class Target {
 		if (r > Math.sqrt(Math.pow((x-cx), 2) + Math.pow((y-cy), 2))) {
 			if (isZombie) {
 				health--;
-				return health <= 0;
+				if (health <= 0) {
+					this.isLife = false;
+				}
+				return true;  // 每次打中都回傳 true
 			} else {
 				this.isLife = false;
 				return true;
